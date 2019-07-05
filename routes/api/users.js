@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const gravatar = require('gravatar');
 
 const User = require('../../models/User');
 router.get('/test', (req, res) => {
@@ -14,10 +15,16 @@ router.post('/register', (req, res) => {
       if (user) {
         return res.status(400).json({ email: '邮箱已注册' });
       } else {
+        const avatar = gravatar.url('fxyf1991@gmail.com', {
+          s: '200',
+          r: 'pg',
+          d: 'mm',
+        });
+
         const newUser = new User({
           name: req.body.name,
           email: req.body.email,
-          // avatar,
+          avatar,
           password: req.body.password,
         });
         // 加密存储密码
