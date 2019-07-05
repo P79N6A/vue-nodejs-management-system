@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 
 const app = express();
 
+// 引入路由
+const users = require('./routes/api/users');
+
 const db = require('./config/keys').mongoURI;
 
 mongoose
