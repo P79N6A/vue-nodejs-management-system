@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const gravatar = require('gravatar');
-
+const jwt = require('jsonwebtoken');
+const keys = require('../../config/keys');
 const User = require('../../models/User');
+
 router.get('/test', (req, res) => {
   res.json({ msg: 'login' });
 });
@@ -46,7 +48,9 @@ router.post('/register', (req, res) => {
         });
       }
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 router.post('/login', (req, res) => {
@@ -62,14 +66,31 @@ router.post('/login', (req, res) => {
         .compare(password, user.password)
         .then((isMatch) => {
           if (isMatch) {
-            res.json({ msg: 'success' });
+            const rule = { id: user.id, name: user.name };
+            console.log(rule);
+            jwt.sign(
+              rule,
+              keys.secretOrKey,
+              { expiresIn: 3600 },
+              (err, token) => {
+                if (err) throw err;
+                res.json({
+                  success: true,
+                  token: 'tt' + token,
+                });
+              },
+            );
           } else {
             return res.status(400).json({ password: '密码错误' });
           }
         })
-        .catch((err) => {});
+        .catch((err) => {
+          console.log(err);
+        });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 module.exports = router;
