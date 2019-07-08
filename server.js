@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 
 const app = express();
 
@@ -20,6 +21,10 @@ mongoose
   .catch((err) => {
     console.error(err);
   });
+
+app.use(passport.initialize());
+const verify = require('./config/passport');
+verify(passport);
 
 app.get('/', (req, res) => {
   res.send('welcome');

@@ -5,6 +5,7 @@ const gravatar = require('gravatar');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const User = require('../../models/User');
+const passport = require('passport');
 
 router.get('/test', (req, res) => {
   res.json({ msg: 'login' });
@@ -28,6 +29,7 @@ router.post('/register', (req, res) => {
           email: req.body.email,
           avatar,
           password: req.body.password,
+          identity: 'employee',
         });
         // 加密存储密码
         bcrypt.genSalt(10, function(err, salt) {
@@ -76,7 +78,7 @@ router.post('/login', (req, res) => {
                 if (err) throw err;
                 res.json({
                   success: true,
-                  token: 'tt' + token,
+                  token: 'Bearer ' + token,
                 });
               },
             );
@@ -92,5 +94,18 @@ router.post('/login', (req, res) => {
       console.log(err);
     });
 });
+
+router.get(
+  '/current',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      identity: req.user.identity,
+    });
+  },
+);
 
 module.exports = router;
